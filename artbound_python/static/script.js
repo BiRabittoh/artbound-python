@@ -3,8 +3,14 @@ const BS_COL_WIDTH = 4,
 	WATERMARK_SRC = "/static/res/wm.png",
 	WATERMARK_WIDTH = 325,
 	WATERMARK_HEIGHT = 98,
-
+	IG_TEMPLATE_SRC = "/static/res/ig.png",
+	IG_MIN_OFFSET_X = 0,
+	IG_MIN_OFFSET_Y = 342,
+	IG_MAX_WIDTH = 1080,
+	IG_MAX_HEIGHT = 988,
+	
 	WATERMARK = new Image(),
+	IG_TEMPLATE = new Image(),
 	date = new Date(),
 	month_input = document.getElementById("month_input"),
 	month_div = document.getElementById("month_div"),
@@ -16,12 +22,14 @@ const BS_COL_WIDTH = 4,
 	opacity_range = document.getElementById("opacity_range"),
 	main_container_div = document.getElementById("main_container"),
 	content_div = document.getElementById("content"),
-	canvas_link = document.getElementById("canvas-download");
+	canvas_link = document.getElementById("canvas-download"),
+	canvas_ig = document.getElementById("instagram-canvas");
 
 let	fanarts = new Array(),
 	watermark_invert = '';
 
 WATERMARK.src = WATERMARK_SRC;
+IG_TEMPLATE.src = IG_TEMPLATE_SRC;
 month_input.value = `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(-2)}`;
 
 function addCanvasEvents(img, canvas, ctx){
@@ -49,6 +57,7 @@ function getNewCardHtml(element) {
 		button3 = document.createElement("button"),
 		button4 = document.createElement("button"),
 		button5 = document.createElement("button"),
+		button6 = document.createElement("button"),
 		filename = `${('0' + element.index).slice(-2)} - ${element.name}.png`;
 	
 	element.div.className = `col-md-${BS_COL_WIDTH} entry${element.enabled == 0 ? " entry-disabled" : ""}`;
@@ -68,23 +77,26 @@ function getNewCardHtml(element) {
 	div3.className = "d-flex justify-content-between align-items-center card-controls";
 	div4.className = "btn-group";
 
-	button1.className = button2.className = button3.className = button4.className = button5.className = "btn btn-sm btn-outline-secondary";
+	button1.className = button2.className = button3.className = button4.className = button5.className = button6.className = "btn btn-sm btn-outline-secondary";
 	button1.innerText = "⬅️";
 	button2.innerText = "*️⃣";
 	button3.innerText = "🔄";
-	button5.innerText = "➡️";
 	button4.innerText = "💾";
+	button5.innerText = "📷";
+	button6.innerText = "➡️";
 	button1.addEventListener("click", function() { moveUpDown(element.id, -1); }, false);
 	button2.addEventListener("click", function() { toggleEntry(element.id); }, false);
 	button3.addEventListener("click", function() { reloadEntry(element.id); }, false);
 	button4.addEventListener("click", function() { saveEntry(element.id); }, false);
-	button5.addEventListener("click", function() { moveUpDown(element.id, 1); }, false);
+	button5.addEventListener("click", function() { saveEntryIG(element.id); }, false);
+	button6.addEventListener("click", function() { moveUpDown(element.id, 1); }, false);
 
 	div4.appendChild(button1);
 	div4.appendChild(button2);
-	div4.appendChild(button3);
+	//div4.appendChild(button3);
 	div4.appendChild(button4);
 	div4.appendChild(button5);
+	div4.appendChild(button6);
 	div3.appendChild(div4);
 	div2.appendChild(a);
 	div2.appendChild(div3);
@@ -96,11 +108,9 @@ function getNewCardHtml(element) {
 
 	element.image = new Image();
 	element.image.addEventListener("load", () => {
-		console.warn("loaded " + element.content);
 		setBaseImage(element.image, element.canvas, ctx);
 		addCanvasEvents(element.image, element.canvas, ctx);
 	});
-	console.warn("loading " + element.content);
 	element.image.src = element.content;
 
 	return element.div;
@@ -141,16 +151,10 @@ function toggleEntry(id) {
 	updateFanartList()
 }
 
-function saveCanvas(canvas) {
-	canvas_link.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-	canvas_link.setAttribute("download", canvas.getAttribute("data-filename"));
+function saveCanvas(my_canvas, filename) {
+	canvas_link.href = my_canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+	canvas_link.setAttribute("download", filename);
 	canvas_link.click()
-}
-
-function saveEntry(id) {
-	entry = getFanart(id);
-	if (!entry) return;
-	saveCanvas(entry.canvas)
 }
 
 function reloadEntry(id){
@@ -199,8 +203,12 @@ function updateOpacity() {
 	opacity_label.innerHTML = Math.round(opacity_range.value * 100) + '%';
 }
 
+function getFactor(img_width, img_height, max_width, max_height){
+	return Math.min(max_width / img_width, max_height / img_height);
+}
+
 function setBaseImage(img, c, ctx) {
-	const f = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height);
+	const f = getFactor(img.width, img.height, MAX_WIDTH, MAX_HEIGHT);
 
 	const new_width = c.width = Math.ceil(img.width * f);
 	const new_height = c.height = Math.ceil(img.height * f)
@@ -222,20 +230,42 @@ function moveUpDown(id, amount) {
 	updateFanartList();
 }
 
-async function postData(url = "", data = {}, contentType = "application/x-www-form-urlencoded") {
-    // Default options are marked with *
-    const response = await fetch(url, { method: "POST", headers: { "Content-Type": contentType },
-      //redirect: "follow", // manual, *follow, error
-      //referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: JSON.stringify(data), // body data type must match "Content-Type" header
-    });
+async function postData(url = "", data = {}, contentType = "application/json") {
+    const response = await fetch(url, { method: "POST", headers: { "Content-Type": contentType }, body: JSON.stringify(data) });
     return response.json();
+}
+
+function saveEntry(id) {
+	entry = getFanart(id);
+	if (!entry) return;
+	saveCanvas(entry.canvas, entry.canvas.getAttribute("data-filename"));
+}
+
+function saveCanvasIG(my_canvas) {
+	const f = getFactor(my_canvas.width, my_canvas.height, IG_MAX_WIDTH, IG_MAX_HEIGHT);
+
+	const width = Math.ceil(my_canvas.width * f);
+	const height = Math.ceil(my_canvas.height * f);
+
+	const offset_x = Math.round((IG_MAX_WIDTH - width) / 2);
+	const offset_y = Math.round((IG_MAX_HEIGHT - height) / 2);
+
+	destCtx = canvas_ig.getContext('2d');
+	destCtx.drawImage(IG_TEMPLATE, 0, 0);
+	destCtx.drawImage(my_canvas, IG_MIN_OFFSET_X + offset_x, IG_MIN_OFFSET_Y + offset_y, width, height);
+	saveCanvas(canvas_ig, "IG - " + my_canvas.getAttribute("data-filename"));
+}
+
+function saveEntryIG(id) {
+	entry = getFanart(id);
+	if (!entry) return;
+	saveCanvasIG(entry.canvas);
 }
 
 function getArtworks() {
 	get_button.disabled = true;
 	get_button.innerText = "…"
-    postData("/", { month: month_input.value }, "application/json").then((data) => {
+    postData("/", { month: month_input.value }).then((data) => {
         console.log(data);
         fanarts = fanarts.concat(data);
         controls_div.hidden = false;
@@ -247,10 +277,21 @@ function getArtworks() {
 function saveAll() {
 	const response = confirm("Vuoi davvero scaricare tutte le fanart?");
 	if(response == false) return;
-	
+
 	fanarts.forEach((fanart) => {
 		if(fanart.enabled) {
-			saveCanvas(fanart.canvas)
+			saveCanvas(fanart.canvas, fanart.canvas.getAttribute("data-filename"))
+		}
+	})
+}
+
+function saveAllIG() {
+	const response = confirm("Vuoi davvero scaricare tutte le storie per le fanart?");
+	if(response == false) return;
+
+	fanarts.forEach((fanart) => {
+		if(fanart.enabled) {
+			saveCanvasIG(fanart.canvas)
 		}
 	})
 }
