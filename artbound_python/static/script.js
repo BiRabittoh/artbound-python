@@ -77,7 +77,7 @@ function getNewCardHtml(element) {
 	button1.addEventListener("click", function() { moveUpDown(element.id, -1); }, false);
 	button2.addEventListener("click", function() { toggleEntry(element.id); }, false);
 	button3.addEventListener("click", function() { reloadEntry(element.id); }, false);
-	button4.addEventListener("click", function() { saveCanvas(element.id); }, false);
+	button4.addEventListener("click", function() { saveEntry(element.id); }, false);
 	button5.addEventListener("click", function() { moveUpDown(element.id, 1); }, false);
 
 	div4.appendChild(button1);
@@ -141,14 +141,16 @@ function toggleEntry(id) {
 	updateFanartList()
 }
 
-function saveCanvas(id) {
+function saveCanvas(canvas) {
+	canvas_link.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+	canvas_link.setAttribute("download", canvas.getAttribute("data-filename"));
+	canvas_link.click()
+}
+
+function saveEntry(id) {
 	entry = getFanart(id);
 	if (!entry) return;
-
-	const image = entry.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-	canvas_link.href = image;
-	canvas_link.setAttribute("download", entry.canvas.getAttribute("data-filename"));
-	canvas_link.click()
+	saveCanvas(entry.canvas)
 }
 
 function reloadEntry(id){
@@ -242,4 +244,13 @@ function getArtworks() {
     });
 }
 
-
+function saveAll() {
+	const response = confirm("Vuoi davvero scaricare tutte le fanart?");
+	if(response == false) return;
+	
+	fanarts.forEach((fanart) => {
+		if(fanart.enabled) {
+			saveCanvas(fanart.canvas)
+		}
+	})
+}
