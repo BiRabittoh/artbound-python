@@ -8,7 +8,7 @@ const BS_COL_WIDTH = 4,
 	date = new Date(),
 	month_input = document.getElementById("month_input"),
 	month_div = document.getElementById("month_div"),
-	authorize_button = document.getElementById("authorize_button"),
+	get_button = document.getElementById("get_button"),
 	selectall_button = document.getElementById("selectall_button"),
 	selectnone_button = document.getElementById("selectnone_button"),
 	togglecolor_button = document.getElementById("togglecolor_button"),
@@ -108,7 +108,9 @@ function getNewCardHtml(element) {
 
 async function updateFanartList() {
 	main_container_div.hidden = false;
-	content_div.innerHTML = ""
+	content_div.innerHTML = "";
+	get_button.disabled = false;
+	get_button.innerText = "Aggiungi";
 	
 	let i = 0;
 	for (fanart of fanarts) {
@@ -229,6 +231,8 @@ async function postData(url = "", data = {}, contentType = "application/x-www-fo
 }
 
 function getArtworks() {
+	get_button.disabled = true;
+	get_button.innerText = "…"
     postData("/", { month: month_input.value }, "application/json").then((data) => {
         console.log(data);
         fanarts = fanarts.concat(data);

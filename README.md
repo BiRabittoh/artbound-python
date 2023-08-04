@@ -12,5 +12,5 @@ A client-server reimplementation of the administration panel for ArtBound.
 * Production: `poetry run waitress-serve --host 0.0.0.0 --port 1111 artbound_python:app`
 
 ## Usage (docker)
-1. Generate a `token.json` file: `python get_token.py`;
+1. Generate a `token.json` file: `poetry run python get_token.py`;
 2. Build the image and start the container: `docker-compose up -d`.
