@@ -26,12 +26,12 @@
                     </svg>
                     ArtBound Panel 2.0
                 </h1>
-                <p class="lead" onclick="debugFn()">Perché semplice è meglio.</p>
+                <a href="/update" class="lead">{{ last_updated }}</a>
                 <div id="month_div">
                     <label for="month_input" style="margin-right: 10px;">Scegli il mese: </label><input id="month_input"
                         type="month" value="2022-08">
                     <a href="#" class="btn my-2 btn-go" onclick="handleAuthClick()" id="authorize_button" hidden>Vai</a>
-                    <a href="#" class="btn btn-secondary my-2" onclick="getArtworks()">getArtworks</a>
+                    <a href="#" class="btn btn-secondary my-2" onclick="getArtworks()">Ottieni</a>
                 </div>
                 <div id="controls" hidden>
                     <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(1)" id="selectall_button">✅</a>

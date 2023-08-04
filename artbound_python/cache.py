@@ -9,7 +9,7 @@ CACHE_DIRECTORY = "cache"
 CACHE_PATH = os.path.join("artbound_python", "static", "res", CACHE_DIRECTORY)
 
 db = []
-last_updated = None
+last_updated = ""
 
 with suppress(FileExistsError):
     os.makedirs(CACHE_PATH)
@@ -31,34 +31,33 @@ def clear_cache():
     shutil.rmtree(CACHE_PATH)
 
 def handle_fanart(fanart):
-    fanart_id = fanart["id"]
-    fanart["content"] = download_fanart(fanart_id)
+    fanart["content"] = download_fanart(fanart["id"])
     return fanart
 
 def handle_row(row):
     fanart_date = datetime.strptime(row[0], "%d/%m/%Y %H.%M.%S")
-    fanart_id = row[3].strip("https://drive.google.com/open?id=")
+    fanart_id = row[3][33:]
     return {
         'id': fanart_id,
         'date': fanart_date.strftime("%Y-%m"),
         'name': row[1],
         'enabled': 1
 	}
-
-def update_database():
-    global db
-    global last_updated
-    db = [ handle_row(x) for x in get_rows() ]
-    if len(db) == 0:
-        print("No fanarts!")
-        exit(1)
-    last_updated = datetime.now()
-
-def get_fanarts(month):
-    return [ handle_fanart(x) for x in db if x["date"] == month ]
-
-update_database()
-
-if __name__ == "__main__":
-    print(handle_fanart({ 'id': '1_DUo-dW40So3T24a91SyGrEcAGKfP0l_'}))
-    #clear_cache()
+    
+class DB():
+    def update_database(self):
+        self.db = [ handle_row(x) for x in get_rows() ]
+        if len(self.db) == 0:
+            print("No fanarts!")
+            exit(1)
+        self.last_updated = datetime.now()
+    
+    def __init__(self):
+        self.db = []
+        self.update_database()
+        
+    def get_fanarts(self, month):
+        return [ handle_fanart(x) for x in self.db if x["date"] == month ]
+    
+    def get_last_updated(self):
+        return self.last_updated.strftime("%d/%m/%Y %H:%M")

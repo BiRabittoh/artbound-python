@@ -58,7 +58,6 @@ def get_file(file_id, cache_path):
     return file_name
 
 load_dotenv()
-SPREADSHEET_ID = os.getenv("SPREADSHEET_ID") #'1OHI2PA62LNrEbViq87AyUlX1ni3Gr9gttxPLvkOzZ6g'
-RANGE = os.getenv("RANGE")#'Risposte del modulo 1!A2:E'
-
+SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
+RANGE = os.getenv("RANGE")
 creds = get_google_credentials()

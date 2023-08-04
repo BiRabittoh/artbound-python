@@ -101,7 +101,7 @@ function getNewCardHtml(element) {
 
 async function updateFanartList() {
 	main_container_div.hidden = false;
-	content_div.innerHTML = ""
+	//content_div.innerHTML = ""
 	
 	let i = 0;
 	for (fanart of fanarts) {
@@ -212,7 +212,6 @@ async function postData(url = "", data = {}, contentType = "application/x-www-fo
 }
 
 function getArtworks() {
-    document.getElementById("")
     postData("/", { month: month_input.value }, "application/json").then((data) => {
         console.log(data);
         fanarts = data;
