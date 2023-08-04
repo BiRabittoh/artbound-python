@@ -1,0 +1,14 @@
+services:
+  artbound_python:
+    build: .
+    image: artbound_python:latest
+    container_name: artbound-python
+    ports:
+      - 127.0.0.1:1111:1111
+#    environment:
+#      - SPREADSHEET_ID=
+#      - RANGE=
+    volumes:
+      - ${PWD}/.env:/app/.env
+      - ${PWD}/credentials.json:/app/credentials.json
+      - ${PWD}/token.json:/app/token.json
