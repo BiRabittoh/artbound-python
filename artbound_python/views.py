@@ -1,7 +1,7 @@
 import json
 from flask import request, redirect, render_template
 from artbound_python import app
-from artbound_python.cache import last_updated, DB
+from artbound_python.cache import last_updated, DB, clear_cache
 
 database = DB()
 
@@ -21,3 +21,9 @@ def route_index():
 def route_update():
     database.update_database()
     return redirect("/")
+
+@app.route('/clear')
+def route_clear():
+    clear_cache()
+    return redirect("/")
+

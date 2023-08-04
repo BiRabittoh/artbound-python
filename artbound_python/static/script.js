@@ -15,7 +15,8 @@ const BS_COL_WIDTH = 4,
 	controls_div = document.getElementById("controls"),
 	opacity_range = document.getElementById("opacity_range"),
 	main_container_div = document.getElementById("main_container"),
-	content_div = document.getElementById("content");
+	content_div = document.getElementById("content"),
+	canvas_link = document.getElementById("canvas-download");
 
 let	fanarts = new Array(),
 	watermark_invert = '';
@@ -46,7 +47,9 @@ function getNewCardHtml(element) {
 		button1 = document.createElement("button"),
 		button2 = document.createElement("button"),
 		button3 = document.createElement("button"),
-		button4 = document.createElement("button");
+		button4 = document.createElement("button"),
+		button5 = document.createElement("button"),
+		filename = `${('0' + element.index).slice(-2)} - ${element.name}.png`;
 	
 	element.div.className = `col-md-${BS_COL_WIDTH} entry${element.enabled == 0 ? " entry-disabled" : ""}`;
 	element.div.id = `div-${element.id}`;
@@ -56,28 +59,32 @@ function getNewCardHtml(element) {
 	element.canvas.id = element.id;
 	element.canvas.setAttribute("data-name", element.name);
 	element.canvas.setAttribute("data-content", element.content);
+	element.canvas.setAttribute("data-filename", filename)
 	div2.className = "card-body";
 	a.className = "card-text";
-	a.innerText = `${('0' + element.index).slice(-2)} - ${element.name}.png`;
+	a.innerText = filename;
 	a.title = "Clicca per copiare."
 	a.addEventListener("click", function() { navigator.clipboard.writeText(a.innerText); }, false)
 	div3.className = "d-flex justify-content-between align-items-center card-controls";
 	div4.className = "btn-group";
 
-	button1.className = button2.className = button3.className = button4.className = "btn btn-sm btn-outline-secondary";
+	button1.className = button2.className = button3.className = button4.className = button5.className = "btn btn-sm btn-outline-secondary";
 	button1.innerText = "⬅️";
 	button2.innerText = "*️⃣";
 	button3.innerText = "🔄";
-	button4.innerText = "➡️";
+	button5.innerText = "➡️";
+	button4.innerText = "💾";
 	button1.addEventListener("click", function() { moveUpDown(element.id, -1); }, false);
 	button2.addEventListener("click", function() { toggleEntry(element.id); }, false);
 	button3.addEventListener("click", function() { reloadEntry(element.id); }, false);
-	button4.addEventListener("click", function() { moveUpDown(element.id, 1); }, false);
+	button4.addEventListener("click", function() { saveCanvas(element.id); }, false);
+	button5.addEventListener("click", function() { moveUpDown(element.id, 1); }, false);
 
 	div4.appendChild(button1);
 	div4.appendChild(button2);
 	div4.appendChild(button3);
 	div4.appendChild(button4);
+	div4.appendChild(button5);
 	div3.appendChild(div4);
 	div2.appendChild(a);
 	div2.appendChild(div3);
@@ -101,7 +108,7 @@ function getNewCardHtml(element) {
 
 async function updateFanartList() {
 	main_container_div.hidden = false;
-	//content_div.innerHTML = ""
+	content_div.innerHTML = ""
 	
 	let i = 0;
 	for (fanart of fanarts) {
@@ -130,6 +137,16 @@ function toggleEntry(id) {
 
 	entry.enabled = !entry.enabled;
 	updateFanartList()
+}
+
+function saveCanvas(id) {
+	entry = getFanart(id);
+	if (!entry) return;
+
+	const image = entry.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+	canvas_link.href = image;
+	canvas_link.setAttribute("download", entry.canvas.getAttribute("data-filename"));
+	canvas_link.click()
 }
 
 function reloadEntry(id){
@@ -214,9 +231,11 @@ async function postData(url = "", data = {}, contentType = "application/x-www-fo
 function getArtworks() {
     postData("/", { month: month_input.value }, "application/json").then((data) => {
         console.log(data);
-        fanarts = data;
+        fanarts = fanarts.concat(data);
         controls_div.hidden = false;
 	    updateOpacity();
 	    updateFanartList();
     });
 }
+
+
