@@ -9,6 +9,9 @@ services:
 #      - SPREADSHEET_ID=
 #      - RANGE=
     volumes:
+      - cache:/app/artbound_python/static/res/cache/
       - ${PWD}/.env:/app/.env
       - ${PWD}/credentials.json:/app/credentials.json
       - ${PWD}/token.json:/app/token.json
+volumes:
+  cache:
