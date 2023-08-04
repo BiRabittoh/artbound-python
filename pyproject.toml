@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "artbound-python"
+version = "0.1.0"
+description = ""
+authors = ["Andronaco Marco <marco.andronaco@olivetti.com>"]
+readme = "README.md"
+packages = [{include = "artbound_python"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^2.3.2"
+google-api-python-client = "^2.95.0"
+google-auth-httplib2 = "^0.1.0"
+google-auth-oauthlib = "^1.0.0"
+requests = "^2.31.0"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
