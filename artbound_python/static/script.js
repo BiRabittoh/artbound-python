@@ -279,9 +279,8 @@ function saveAll() {
 	if(response == false) return;
 
 	fanarts.forEach((fanart) => {
-		if(fanart.enabled) {
-			saveCanvas(fanart.canvas, fanart.canvas.getAttribute("data-filename"))
-		}
+		if(fanart.enabled)
+			saveCanvas(fanart.canvas, fanart.canvas.getAttribute("data-filename"));
 	})
 }
 
@@ -290,8 +289,7 @@ function saveAllIG() {
 	if(response == false) return;
 
 	fanarts.forEach((fanart) => {
-		if(fanart.enabled) {
-			saveCanvasIG(fanart.canvas)
-		}
-	})
+		if(fanart.enabled)
+			saveCanvasIG(fanart.canvas);
+	});
 }

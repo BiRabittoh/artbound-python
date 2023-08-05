@@ -9,6 +9,7 @@ services:
 #      - SPREADSHEET_ID=
 #      - RANGE=
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - cache:/app/artbound_python/static/res/cache/
       - ${PWD}/.env:/app/.env
       - ${PWD}/credentials.json:/app/credentials.json
