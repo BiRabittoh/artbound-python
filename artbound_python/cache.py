@@ -47,11 +47,14 @@ def handle_row(row):
     
 class DB():
     def update_database(self):
+        prev_length = len(self.db)
         self.db = [ handle_row(x) for x in get_rows() ]
-        if len(self.db) == 0:
+        new_length = len(self.db)
+        if new_length == 0:
             print("No fanarts!")
             exit(1)
         self.last_updated = datetime.now()
+        return new_length - prev_length
     
     def __init__(self):
         self.db = []

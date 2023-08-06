@@ -57,10 +57,6 @@
   flex-direction: row-reverse;
 }
 
-.card-text {
-  text-decoration: underline !important;
-}
-
 body {
   background-color: var(--background0);
   color: var(--text);
