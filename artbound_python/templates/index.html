@@ -37,7 +37,6 @@
                 <div id="controls" hidden>
                     <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(1)" id="selectall_button">✅</a>
                     <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(0)" id="selectnone_button">❎</a>
-                    <a href="#" class="btn btn-secondary my-2" onclick="toggleColor()" id="togglecolor_button">⚪</a>
                     <input type="range" class="form-range" id="opacity_range" min="0" max="1" step="0.01" oninput="updateOpacity()" value="0.4">
                     <label for="opacity_range" class="form-label" id="opacity_label"></label>
                     <a href="#" class="btn btn-secondary my-2" onclick="saveAll()" id="saveall_button">💾</a>
@@ -89,6 +88,7 @@
                         <div class="btn-group">
                             <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', -1);">⬅️</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="toggleEntry('{| id |}');">*️⃣</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleInvert('{| id |}', this);">⚪</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="saveEntry('{| id |}');">💾</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="saveEntryIG('{| id |}');">📷</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', 1);">➡️</button>

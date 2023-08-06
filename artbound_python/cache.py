@@ -41,7 +41,8 @@ def handle_row(row):
         'id': fanart_id,
         'date': fanart_date.strftime("%Y-%m"),
         'name': row[1],
-        'enabled': 1
+        'enabled': 1,
+        'watermark': { 'invert': '' }
 	}
     
 class DB():

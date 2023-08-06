@@ -17,7 +17,6 @@ const BS_COL_WIDTH = 4,
 	get_button = document.getElementById("get_button"),
 	selectall_button = document.getElementById("selectall_button"),
 	selectnone_button = document.getElementById("selectnone_button"),
-	togglecolor_button = document.getElementById("togglecolor_button"),
 	controls_div = document.getElementById("controls"),
 	opacity_range = document.getElementById("opacity_range"),
 	main_container_div = document.getElementById("main_container"),
@@ -41,12 +40,7 @@ function addCanvasEvents(element, ctx) {
 				element.clicked = true;
 				console.log(element);
 			}
-			element.watermark = {
-				x: undefined,
-				y: undefined,
-				opacity: opacity_range.value,
-				invert: watermark_invert
-			}
+			element.watermark.opacity = opacity_range.value;
 			addWatermark(e, element, ctx);
 		}
 	}
@@ -164,15 +158,6 @@ function debugFn() {
 	updateFanartList();
 }
 
-function toggleColor() {
-	watermark_invert = watermark_invert == '' ? 'invert(1)' : '';
-	updateColorDisplay();
-}
-
-function updateColorDisplay() {
-	togglecolor_button.innerText = watermark_invert ? "⚫" : "⚪";
-}
-
 function clickCoordsToCanvas(clickX, clickY, c) {
 	const rect = c.getBoundingClientRect();
 	const x = (clickX - rect.left) * c.width / c.clientWidth;
@@ -223,6 +208,15 @@ function moveUpDown(id, amount) {
 	[fanarts[pos], fanarts[new_pos]] = [fanarts[new_pos], fanarts[pos]];
 
 	updateFanartList();
+}
+
+function toggleInvert(id, button) {
+	const entry = fanarts.find(element => element.id == id);
+	entry.watermark.invert = entry.watermark.invert == '' ? 'invert(1)' : '';
+	button.innerText = entry.watermark.invert ? "⚫" : "⚪";
+	const ctx = entry.canvas.getContext('2d');
+	setBaseImage(entry.image, entry.canvas, ctx);
+	drawWatermark(entry.watermark, ctx);
 }
 
 async function postData(url = "", data = {}, contentType = "application/json") {
