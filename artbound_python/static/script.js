@@ -8,7 +8,7 @@ const BS_COL_WIDTH = 4,
 	IG_MIN_OFFSET_Y = 342,
 	IG_MAX_WIDTH = 1080,
 	IG_MAX_HEIGHT = 988,
-	
+
 	WATERMARK = new Image(),
 	IG_TEMPLATE = new Image(),
 	date = new Date(),
@@ -26,22 +26,44 @@ const BS_COL_WIDTH = 4,
 	canvas_ig = document.getElementById("instagram-canvas"),
 	fanart_template = document.getElementById("fanart-template").innerHTML;
 
-let	fanarts = new Array(),
+let fanarts = new Array(),
 	watermark_invert = '';
 
 WATERMARK.src = WATERMARK_SRC;
 IG_TEMPLATE.src = IG_TEMPLATE_SRC;
 month_input.value = `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(-2)}`;
 
-function addCanvasEvents(img, canvas, ctx){
+function addCanvasEvents(element, ctx) {
 	function abc(e) {
-		if (e.button == 0) addWatermark(e, img, canvas, ctx);
+		if (element.enabled == 0) return;
+		if (e.button == 0) {
+			if (e.type == "mousedown") {
+				element.clicked = true;
+				console.log(element);
+			}
+			element.watermark = {
+				x: undefined,
+				y: undefined,
+				opacity: opacity_range.value,
+				invert: watermark_invert
+			}
+			addWatermark(e, element, ctx);
+		}
 	}
 
-	canvas.addEventListener('mousemove', abc);
-	canvas.addEventListener('mousedown', function(e) {
-		canvas.removeEventListener('mousemove', abc);
-		canvas.addEventListener('mousedown', abc);
+	if (element.clicked) {
+		element.canvas.addEventListener('mousedown', abc);
+		return;
+	}
+	element.canvas.addEventListener('mousemove', abc);
+	element.canvas.addEventListener('mouseleave', () => {
+		if (!element.clicked && element.enabled)
+			setBaseImage(element.image, element.canvas, ctx);
+	});
+	element.canvas.addEventListener('mousedown', (e) => {
+		abc(e);
+		element.canvas.removeEventListener('mousemove', abc);
+		element.canvas.addEventListener('mousedown', abc);
 	});
 }
 
@@ -49,17 +71,18 @@ function createElementFromHTML(htmlString) {
 	const div = document.createElement('div');
 	div.innerHTML = htmlString.trim();
 	return div.firstChild;
-  }
+}
 
 function getNewCardHtml(element) {
 
-	const id = element.id;
-	const index = element.index;
-	const name = element.name;
-	const content = element.content;
-	const filename = `${('0' + element.index).slice(-2)} - ${element.name}.png`;
+	const id = element.id,
+		index = element.index,
+		name = element.name,
+		content = element.content,
+		filename = `${('0' + element.index).slice(-2)} - ${element.name}.png`,
+		disabled = element.enabled == 0 ? " entry-disabled" : "";
 
-	const html_string = Mustache.render("{{={| |}=}}" + fanart_template, {id, index, name, content, filename });
+	const html_string = Mustache.render("{{={| |}=}}" + fanart_template, { id, index, name, content, filename, disabled });
 	element.div = createElementFromHTML(html_string);
 	element.canvas = element.div.getElementsByTagName("canvas")[0];
 
@@ -67,8 +90,12 @@ function getNewCardHtml(element) {
 
 	element.image = new Image();
 	element.image.addEventListener("load", () => {
+		const wm_info = element.watermark;
 		setBaseImage(element.image, element.canvas, ctx);
-		addCanvasEvents(element.image, element.canvas, ctx);
+		if (element.clicked) {
+			drawWatermark(wm_info, ctx);
+		}
+		addCanvasEvents(element, ctx);
 	});
 	element.image.src = element.content;
 
@@ -80,10 +107,10 @@ async function updateFanartList() {
 	content_div.innerHTML = "";
 	get_button.disabled = false;
 	get_button.innerText = "Aggiungi";
-	
+
 	let i = 0;
 	for (fanart of fanarts) {
-		if(fanart.enabled){
+		if (fanart.enabled) {
 			i++;
 			fanart.index = i;
 			content_div.appendChild(getNewCardHtml(fanart));
@@ -91,14 +118,14 @@ async function updateFanartList() {
 	}
 
 	for (fanart of fanarts) {
-		if(!fanart.enabled){
+		if (!fanart.enabled) {
 			fanart.index = 0;
 			content_div.appendChild(getNewCardHtml(fanart));
 		}
 	}
 }
 
-function getFanart(id){
+function getFanart(id) {
 	return fanarts.find(element => element.id == id)
 }
 
@@ -116,7 +143,7 @@ function saveCanvas(my_canvas, filename) {
 	canvas_link.click()
 }
 
-function reloadEntry(id){
+function reloadEntry(id) {
 	const fanart = getFanart(id);
 	if (!fanart) return;
 
@@ -130,7 +157,7 @@ function selectAllNone(toggle) {
 	updateFanartList()
 }
 
-function debugFn(){
+function debugFn() {
 	fanarts = JSON.parse('[{"id":"1dE8L7w2DuOfQSJwf5oRjAeJ-VZfy5o-6","date":["03","08","2022"],"name":"Saro","content":"/static/res/wm.png","enabled":1,"index":1,"div":{}},{"id":"1ZO2poqaylmh7_FkEjRthozVXFpcP1Edx","date":["18","08","2022"],"name":"suchetto","content":"https://drive.google.com/uc?id=1ZO2poqaylmh7_FkEjRthozVXFpcP1Edx","enabled":1,"index":2,"div":{}},{"id":"1jkpZzqnQUdXv7QiW1khuwnSsdnjudBt-","date":["18","08","2022"],"name":"suca","content":"https://drive.google.com/uc?id=1clZbi1QzJQo_c7PGWx-nmLgfPhXqHdZR","enabled":1,"index":3,"div":{}}]');
 	controls_div.hidden = false;
 	updateOpacity();
@@ -146,23 +173,32 @@ function updateColorDisplay() {
 	togglecolor_button.innerText = watermark_invert ? "⚫" : "⚪";
 }
 
-function addWatermark(event, img, c, ctx) {
-	setBaseImage(img, c, ctx);
-
+function clickCoordsToCanvas(clickX, clickY, c) {
 	const rect = c.getBoundingClientRect();
-	const x = (event.clientX - rect.left) * c.width / c.clientWidth;
-	const y = (event.clientY - rect.top) * c.height / c.clientHeight;
+	const x = (clickX - rect.left) * c.width / c.clientWidth;
+	const y = (clickY - rect.top) * c.height / c.clientHeight;
+	return [x, y];
+}
 
-	ctx.globalAlpha = opacity_range.value;
-	ctx.filter = watermark_invert;
-	ctx.drawImage(WATERMARK, x - (WATERMARK_WIDTH / 2), y - (WATERMARK_HEIGHT / 2), WATERMARK_WIDTH, WATERMARK_HEIGHT);
+function drawWatermark(wm_info, ctx) {
+	ctx.globalAlpha = wm_info.opacity;
+	ctx.filter = wm_info.invert;
+	ctx.drawImage(WATERMARK, wm_info.x - (WATERMARK_WIDTH / 2), wm_info.y - (WATERMARK_HEIGHT / 2), WATERMARK_WIDTH, WATERMARK_HEIGHT);
+}
+
+function addWatermark(event, element, ctx) {
+	setBaseImage(element.image, element.canvas, ctx);
+	const [x, y] = clickCoordsToCanvas(event.clientX, event.clientY, element.canvas);
+	element.watermark.x = x;
+	element.watermark.y = y
+	drawWatermark(element.watermark, ctx);
 }
 
 function updateOpacity() {
 	opacity_label.innerHTML = Math.round(opacity_range.value * 100) + '%';
 }
 
-function getFactor(img_width, img_height, max_width, max_height){
+function getFactor(img_width, img_height, max_width, max_height) {
 	return Math.min(max_width / img_width, max_height / img_height);
 }
 
@@ -190,8 +226,8 @@ function moveUpDown(id, amount) {
 }
 
 async function postData(url = "", data = {}, contentType = "application/json") {
-    const response = await fetch(url, { method: "POST", headers: { "Content-Type": contentType }, body: JSON.stringify(data) });
-    return response.json();
+	const response = await fetch(url, { method: "POST", headers: { "Content-Type": contentType }, body: JSON.stringify(data) });
+	return response.json();
 }
 
 function saveEntry(id) {
@@ -224,31 +260,31 @@ function saveEntryIG(id) {
 function getArtworks() {
 	get_button.disabled = true;
 	get_button.innerText = "…"
-    postData("/", { month: month_input.value }).then((data) => {
-        console.log(data);
-        fanarts = fanarts.concat(data);
-        controls_div.hidden = false;
-	    updateOpacity();
-	    updateFanartList();
-    });
+	postData("/", { month: month_input.value }).then((data) => {
+		//console.log(data);
+		fanarts = fanarts.concat(data);
+		controls_div.hidden = false;
+		updateOpacity();
+		updateFanartList();
+	});
 }
 
 function saveAll() {
 	const response = confirm("Vuoi davvero scaricare tutte le fanart?");
-	if(response == false) return;
+	if (response == false) return;
 
 	fanarts.forEach((fanart) => {
-		if(fanart.enabled)
+		if (fanart.enabled)
 			saveCanvas(fanart.canvas, fanart.canvas.getAttribute("data-filename"));
 	})
 }
 
 function saveAllIG() {
 	const response = confirm("Vuoi davvero scaricare tutte le storie per le fanart?");
-	if(response == false) return;
+	if (response == false) return;
 
 	fanarts.forEach((fanart) => {
-		if(fanart.enabled)
+		if (fanart.enabled)
 			saveCanvasIG(fanart.canvas);
 	});
 }
