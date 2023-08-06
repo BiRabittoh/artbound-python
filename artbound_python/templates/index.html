@@ -38,8 +38,7 @@
                     <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(1)" id="selectall_button">✅</a>
                     <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(0)" id="selectnone_button">❎</a>
                     <a href="#" class="btn btn-secondary my-2" onclick="toggleColor()" id="togglecolor_button">⚪</a>
-                    <input type="range" class="form-range" id="opacity_range" min="0" max="1" step="0.01"
-                        oninput="updateOpacity()" value="0.4">
+                    <input type="range" class="form-range" id="opacity_range" min="0" max="1" step="0.01" oninput="updateOpacity()" value="0.4">
                     <label for="opacity_range" class="form-label" id="opacity_label"></label>
                     <a href="#" class="btn btn-secondary my-2" onclick="saveAll()" id="saveall_button">💾</a>
                     <a href="#" class="btn btn-secondary my-2" onclick="saveAllIG()" id="saveallig_button">📷</a>
@@ -77,6 +76,29 @@
                 (BiRabittoh).</p>
         </div>
     </footer>
+    <template id="fanart-template">
+        <div class="col-md-4 entry" id="{| id |}" data-index="{| index |}">
+            <div class="card mb-4 box-shadow my-card">
+                <canvas class="card-img-top entry-img"
+                    id="{| id |}" data-name="{| name |}"
+                    data-content="{| content |}"
+                    data-filename="{| filename |}"></canvas>
+                <div class="card-body">
+                    <a class="card-text" title="Clicca per copiare." onclick="navigator.clipboard.writeText(this.innerText);">{| filename |}</a>
+                    <div class="d-flex justify-content-between align-items-center card-controls">
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', -1);">⬅️</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleEntry('{| id |}');">*️⃣</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="saveEntry('{| id |}');">💾</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="saveEntryIG('{| id |}');">📷</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', 1);">➡️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
     <script src="/static/ext/js/jquery-3.2.1.slim.min.js"></script>
     <script src="/static/ext/js/bootstrap.min.js"></script>
     <script src="/static/script.js"></script>

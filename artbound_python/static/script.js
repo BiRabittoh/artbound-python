@@ -23,7 +23,8 @@ const BS_COL_WIDTH = 4,
 	main_container_div = document.getElementById("main_container"),
 	content_div = document.getElementById("content"),
 	canvas_link = document.getElementById("canvas-download"),
-	canvas_ig = document.getElementById("instagram-canvas");
+	canvas_ig = document.getElementById("instagram-canvas"),
+	fanart_template = document.getElementById("fanart-template").innerHTML;
 
 let	fanarts = new Array(),
 	watermark_invert = '';
@@ -44,65 +45,23 @@ function addCanvasEvents(img, canvas, ctx){
 	});
 }
 
+function createElementFromHTML(htmlString) {
+	const div = document.createElement('div');
+	div.innerHTML = htmlString.trim();
+	return div.firstChild;
+  }
+
 function getNewCardHtml(element) {
-	element.div = document.createElement("div");
-	element.canvas = document.createElement("canvas");
-	const div1 = document.createElement("div"),
-		div2 = document.createElement("div"),
-		a = document.createElement("a"),
-		div3 = document.createElement("div"),
-		div4 = document.createElement("div"),
-		button1 = document.createElement("button"),
-		button2 = document.createElement("button"),
-		button3 = document.createElement("button"),
-		button4 = document.createElement("button"),
-		button5 = document.createElement("button"),
-		button6 = document.createElement("button"),
-		filename = `${('0' + element.index).slice(-2)} - ${element.name}.png`;
-	
-	element.div.className = `col-md-${BS_COL_WIDTH} entry${element.enabled == 0 ? " entry-disabled" : ""}`;
-	element.div.id = `div-${element.id}`;
-	element.div.setAttribute("data-index", element.index);
-	div1.className = `card mb-${BS_COL_WIDTH} box-shadow my-card`;
-	element.canvas.className = "card-img-top entry-img";
-	element.canvas.id = element.id;
-	element.canvas.setAttribute("data-name", element.name);
-	element.canvas.setAttribute("data-content", element.content);
-	element.canvas.setAttribute("data-filename", filename)
-	div2.className = "card-body";
-	a.className = "card-text";
-	a.innerText = filename;
-	a.title = "Clicca per copiare."
-	a.addEventListener("click", function() { navigator.clipboard.writeText(a.innerText); }, false)
-	div3.className = "d-flex justify-content-between align-items-center card-controls";
-	div4.className = "btn-group";
 
-	button1.className = button2.className = button3.className = button4.className = button5.className = button6.className = "btn btn-sm btn-outline-secondary";
-	button1.innerText = "⬅️";
-	button2.innerText = "*️⃣";
-	button3.innerText = "🔄";
-	button4.innerText = "💾";
-	button5.innerText = "📷";
-	button6.innerText = "➡️";
-	button1.addEventListener("click", function() { moveUpDown(element.id, -1); }, false);
-	button2.addEventListener("click", function() { toggleEntry(element.id); }, false);
-	button3.addEventListener("click", function() { reloadEntry(element.id); }, false);
-	button4.addEventListener("click", function() { saveEntry(element.id); }, false);
-	button5.addEventListener("click", function() { saveEntryIG(element.id); }, false);
-	button6.addEventListener("click", function() { moveUpDown(element.id, 1); }, false);
+	const id = element.id;
+	const index = element.index;
+	const name = element.name;
+	const content = element.content;
+	const filename = `${('0' + element.index).slice(-2)} - ${element.name}.png`;
 
-	div4.appendChild(button1);
-	div4.appendChild(button2);
-	//div4.appendChild(button3);
-	div4.appendChild(button4);
-	div4.appendChild(button5);
-	div4.appendChild(button6);
-	div3.appendChild(div4);
-	div2.appendChild(a);
-	div2.appendChild(div3);
-	div1.appendChild(element.canvas);
-	div1.appendChild(div2);
-	element.div.appendChild(div1);
+	const html_string = Mustache.render("{{={| |}=}}" + fanart_template, {id, index, name, content, filename });
+	element.div = createElementFromHTML(html_string);
+	element.canvas = element.div.getElementsByTagName("canvas")[0];
 
 	const ctx = element.canvas.getContext("2d");
 
