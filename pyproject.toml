@@ -16,6 +16,11 @@ requests = "^2.31.0"
 python-dotenv = "^1.0.0"
 waitress = "^2.1.2"
 
+[tool.poetry.group.prod]
+optional = true
+
+[tool.poetry.group.prod.dependencies]
+bjoern = "^3.2.2"
 
 [build-system]
 requires = ["poetry-core"]

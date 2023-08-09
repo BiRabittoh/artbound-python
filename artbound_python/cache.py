@@ -19,10 +19,9 @@ def download_fanart(fanart_id: str):
     cached_ids = [ x.split(".")[0] for x in cached_files ]
     try:
         position = cached_ids.index(fanart_id)
-        print("Using cached file.")
         fanart = cached_files[position]
     except ValueError:
-        print("File is not cached. Downloading.")
+        print("Downloading", fanart_id)
         fanart = get_file(fanart_id, CACHE_PATH)
         
     return f"/static/res/{CACHE_DIRECTORY}/{fanart}"

@@ -1,8 +1,9 @@
-FROM python:3-alpine
+FROM tecktron/python-bjoern:latest-slim
 
-WORKDIR /app
-COPY . .
 RUN pip install --upgrade pip
+COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-CMD ["waitress-serve", "--host", "0.0.0.0", "--port", "1111", "artbound_python:app"]
+COPY ./artbound_python /app/artbound_python
+WORKDIR /app
+ENV APP_MODULE=artbound_python:app
