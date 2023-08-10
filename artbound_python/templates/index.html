@@ -57,26 +57,12 @@
                 </div>
             </div>
         </section>
-        <div class="album py-5" id="main_container" hidden>
+        <div class="album py-5" id="main_container" style="padding-bottom: 0px !important;">
             <div class="container">
                 <div class="row" id="content"></div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <a href="#" id="copy_button" onclick="navigator.clipboard.writeText(filename_h1.innerText);"
-                            hidden>
-                            <h1 id="filename" style="display: inline;"></h1>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
-                                preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
-                                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2">
-                                    <rect width="13" height="13" x="9" y="9" rx="2" ry="2" />
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                                </g>
-                            </svg>
-                        </a>
-                    </div>
-                    <div id="canvas" class="col-md-12" hidden>
-                        <canvas width="1080" height="1920" id="instagram-canvas"></canvas>
+                <div class="row text-row">
+                    <div class="col-md-12 text-center">
+                        <a href="/help" class="btn btn-primary">Info ❔</a>
                     </div>
                 </div>
             </div>
@@ -110,6 +96,7 @@
             </div>
         </div>
     </template>
+    <canvas width="1080" height="1920" id="instagram-canvas" hidden></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
     <script src="/static/ext/js/jquery-3.2.1.slim.min.js"></script>
     <script src="/static/ext/js/bootstrap.min.js"></script>

@@ -18,7 +18,6 @@ const MAX_WIDTH = MAX_HEIGHT = 1000,
 	selectnone_button = document.getElementById("selectnone_button"),
 	controls_div = document.getElementById("controls"),
 	opacity_range = document.getElementById("opacity_range"),
-	main_container_div = document.getElementById("main_container"),
 	content_div = document.getElementById("content"),
 	canvas_link = document.getElementById("canvas-download"),
 	canvas_ig = document.getElementById("instagram-canvas"),
@@ -84,7 +83,6 @@ function getNewCardHtml(element) {
 }
 
 async function updateFanartList() {
-	main_container_div.hidden = false;
 	content_div.innerHTML = "";
 	get_button.disabled = false;
 	get_button.innerText = "Aggiungi";
