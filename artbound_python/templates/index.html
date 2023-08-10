@@ -48,12 +48,12 @@
                     <button class="btn btn-secondary my-2" onclick="getArtworks();" id="get_button">Ottieni</button>
                 </div>
                 <div id="controls" hidden>
-                    <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(1);" id="selectall_button">✅</a>
-                    <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(0);" id="selectnone_button">❎</a>
+                    <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(1);" id="selectall_button">{{ emoji["select_all"] }}</a>
+                    <a href="#" class="btn btn-secondary my-2" onclick="selectAllNone(0);" id="selectnone_button">{{ emoji["select_none"] }}</a>
                     <input type="range" class="form-range" id="opacity_range" min="0" max="1" step="0.01" oninput="updateOpacity();" value="0.4">
                     <label for="opacity_range" class="form-label" id="opacity_label"></label>
-                    <a href="#" class="btn btn-secondary my-2" onclick="saveAll();" id="saveall_button">💾</a>
-                    <a href="#" class="btn btn-secondary my-2" onclick="saveAllIG();" id="saveallig_button">📷</a>
+                    <a href="#" class="btn btn-secondary my-2" onclick="saveAll();" id="saveall_button">{{ emoji["save"] }}</a>
+                    <a href="#" class="btn btn-secondary my-2" onclick="saveAllIG();" id="saveallig_button">{{ emoji["save_ig"] }}</a>
                 </div>
             </div>
         </section>
@@ -98,12 +98,12 @@
                     <a class="card-text" title="Clicca per copiare." onclick="navigator.clipboard.writeText(this.innerText);">{| filename |}</a>
                     <div class="d-flex justify-content-between align-items-center card-controls">
                         <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', -1);">⬅️</button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleEntry('{| id |}');">♻️</button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleInvert('{| id |}', this);">⚪</button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="saveEntry('{| id |}');">💾</button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="saveEntryIG('{| id |}');">📷</button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', 1);">➡️</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', -1);">{{ emoji["prev"] }}</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleEntry('{| id |}');">{{ emoji["toggle"] }}</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleInvert('{| id |}', this);">{{ emoji["color"] }}</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="saveEntry('{| id |}');">{{ emoji["save"] }}</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="saveEntryIG('{| id |}');">{{ emoji["save_ig"] }}</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', 1);">{{ emoji["next"] }}</button>
                         </div>
                     </div>
                 </div>

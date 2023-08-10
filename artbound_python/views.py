@@ -6,10 +6,21 @@ from artbound_python.cache import DB, clear_cache
 
 database = DB()
 
+emoji = {
+    "select_all": "✅",
+    "select_none": "❎",
+    "save": "💾",
+    "save_ig": "📷",
+    "prev": "⬅️",
+    "next": "➡️",
+    "toggle": "♻️",
+    "color": "⚪",
+}
+
 @app.route('/', methods=['GET', 'POST'])
 def route_index():
     if request.method == 'GET':
-        return render_template("index.html", last_updated=database.get_last_updated(), current_month=datetime.today().strftime("%Y-%m"))
+        return render_template("index.html", last_updated=database.get_last_updated(), current_month=datetime.today().strftime("%Y-%m"), emoji=emoji)
 
     if (request.headers.get('Content-Type') != 'application/json'):
         return 'Content-Type not supported. Please use "application/json".'
@@ -17,6 +28,10 @@ def route_index():
     month = request.json["month"]
     fanarts = database.get_fanarts(month)
     return json.dumps(fanarts)
+
+@app.route('/help')
+def route_help():
+    return render_template("help.html", emoji=emoji)
 
 @app.route('/update', methods=['POST'])
 def route_update():
