@@ -1,4 +1,4 @@
-FROM tecktron/python-bjoern:latest-slim
+FROM tecktron/python-waitress:slim
 
 RUN pip install --upgrade pip
 COPY ./requirements.txt .

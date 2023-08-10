@@ -20,7 +20,7 @@ waitress = "^2.1.2"
 optional = true
 
 [tool.poetry.group.prod.dependencies]
-bjoern = "^3.2.2"
+waitress = "^2.1.2"
 
 [build-system]
 requires = ["poetry-core"]

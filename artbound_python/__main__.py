@@ -1,4 +1,4 @@
-import bjoern
+from waitress import serve
 from artbound_python import app
 
-bjoern.run(app, "0.0.0.0", 1111)
+serve(app, listen='*:1111')
