@@ -10,6 +10,8 @@ const MAX_WIDTH = MAX_HEIGHT = 1000,
 
 	WATERMARK = new Image(),
 	IG_TEMPLATE = new Image(),
+	fanarts = new Array(),
+	months = new Set(),
 	last_updated_link = document.getElementById("last-updated-link"),
 	month_input = document.getElementById("month_input"),
 	month_div = document.getElementById("month_div"),
@@ -23,8 +25,7 @@ const MAX_WIDTH = MAX_HEIGHT = 1000,
 	canvas_ig = document.getElementById("instagram-canvas"),
 	fanart_template = document.getElementById("fanart-template").innerHTML;
 
-let fanarts = new Array(),
-	new_entries = 0;
+let	new_entries = 0;
 
 WATERMARK.src = WATERMARK_SRC;
 IG_TEMPLATE.src = IG_TEMPLATE_SRC;
@@ -85,7 +86,7 @@ function getNewCardHtml(element) {
 async function updateFanartList() {
 	content_div.innerHTML = "";
 	get_button.disabled = false;
-	get_button.innerText = "Aggiungi";
+	get_button.innerText = emoji_get;
 
 	let i = 0;
 	for (fanart of fanarts) {
@@ -104,7 +105,7 @@ async function updateFanartList() {
 }
 
 function getFanart(id) {
-	return fanarts.find(element => element.id == id)
+	return fanarts.find(element => element.id == id);
 }
 
 function toggleEntry(id) {
@@ -112,13 +113,13 @@ function toggleEntry(id) {
 	if (!entry) return;
 
 	entry.enabled = !entry.enabled;
-	updateFanartList()
+	updateFanartList();
 }
 
 function saveCanvas(my_canvas, filename) {
 	canvas_link.href = my_canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
 	canvas_link.setAttribute("download", filename);
-	canvas_link.click()
+	canvas_link.click();
 }
 
 function reloadEntry(id) {
@@ -132,7 +133,7 @@ function reloadEntry(id) {
 
 function selectAllNone(toggle) {
 	fanarts.map(x => x.enabled = toggle)
-	updateFanartList()
+	updateFanartList();
 }
 
 function clickCoordsToCanvas(clickX, clickY, c) {
@@ -180,7 +181,6 @@ function moveUpDown(id, amount) {
 	const new_pos = pos + amount;
 
 	if (new_pos <= -1 || new_pos >= fanarts.length) return;
-
 	[fanarts[pos], fanarts[new_pos]] = [fanarts[new_pos], fanarts[pos]];
 	updateFanartList();
 }
@@ -190,7 +190,7 @@ function toggleInvert(id, button) {
 	if (!entry) return;
 	if (!entry.enabled) return;
 	entry.watermark.invert = entry.watermark.invert == '' ? 'invert(1)' : '';
-	button.innerText = entry.watermark.invert ? "⚫" : "⚪";
+	button.innerText = entry.watermark.invert ? emoji_color_black : emoji_color;
 	const ctx = entry.canvas.getContext('2d');
 	setBaseImage(entry.image, entry.canvas, ctx);
 	drawWatermark(entry.watermark, ctx);
@@ -228,13 +228,16 @@ function saveEntryIG(id) {
 }
 
 function getArtworks() {
+	const month_value = month_input.value;
+	if (months.has(month_value)) return;
 	get_button.disabled = true;
-	get_button.innerText = "…"
-	postData("/", { month: month_input.value }).then((data) => {
-		fanarts = fanarts.concat(data);
+	get_button.innerText = "🔄"
+	postData("/", { month: month_value }).then((data) => {
+		fanarts.push(...data);
 		controls_div.hidden = false;
 		updateOpacity();
 		updateFanartList();
+		months.add(month_value);
 	});
 }
 
@@ -261,6 +264,6 @@ function updateDb() {
 		last_updated_link.innerText = data.timestamp;
 		if (data.new == 0) return;
 		new_entries += data.new;
-		last_updated_link.innerText += ` (+${new_entries})`;
+		last_updated_link.innerText += ` (+${ new_entries })`;
 	});
 }

@@ -7,14 +7,20 @@ from artbound_python.cache import DB, clear_cache
 database = DB()
 
 emoji = {
+    "favicon": "✏️",
     "select_all": "✅",
     "select_none": "❎",
     "save": "💾",
     "save_ig": "📷",
     "prev": "⬅️",
     "next": "➡️",
+    "get_first": "🔽",
+    "get": "⏬",
     "toggle": "♻️",
     "color": "⚪",
+    "color_black": "⚫",
+    "help": "❔",
+    "home": "🏠",
 }
 
 @app.route('/', methods=['GET', 'POST'])

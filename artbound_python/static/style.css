@@ -57,6 +57,11 @@
   flex-direction: row-reverse;
 }
 
+.card-text {
+  display: block;
+  padding-bottom: 10px;
+}
+
 body {
   background-color: var(--background0);
   color: var(--text);
@@ -97,4 +102,12 @@ a:hover {
 
 .text-row {
   margin-top: 20px;
+}
+
+footer a {
+  text-decoration: underline;
+}
+
+footer a:hover {
+  text-decoration: none;
 }
