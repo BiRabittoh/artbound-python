@@ -23,7 +23,8 @@ const MAX_WIDTH = MAX_HEIGHT = 1000,
 	content_div = document.getElementById("content"),
 	canvas_link = document.getElementById("canvas-download"),
 	canvas_ig = document.getElementById("instagram-canvas"),
-	fanart_template = document.getElementById("fanart-template").innerHTML;
+	fanart_template = document.getElementById("fanart-template").innerHTML,
+	radians_factor = 90 * Math.PI / 180;
 
 let	new_entries = 0;
 
@@ -45,7 +46,7 @@ function addCanvasEvents(element, ctx) {
 	element.canvas.addEventListener('mousemove', abc);
 	element.canvas.addEventListener('mouseleave', () => {
 		if (!element.clicked && element.enabled)
-			setBaseImage(element.image, element.canvas, ctx);
+			setBaseImage(element);
 	});
 	element.canvas.addEventListener('mousedown', (e) => {
 		element.clicked = true;
@@ -74,7 +75,7 @@ function getNewCardHtml(element) {
 	element.image = new Image();
 	element.image.addEventListener("load", () => {
 		const wm_info = element.watermark;
-		setBaseImage(element.image, element.canvas, ctx);
+		setBaseImage(element);
 		if (element.clicked)
 			drawWatermark(wm_info, ctx);
 		addCanvasEvents(element, ctx);
@@ -113,6 +114,7 @@ function toggleEntry(id) {
 	if (!entry) return;
 
 	entry.enabled = !entry.enabled;
+	entry.clicked = false;
 	updateFanartList();
 }
 
@@ -150,10 +152,10 @@ function drawWatermark(wm_info, ctx) {
 }
 
 function addWatermark(event, element, ctx) {
-	setBaseImage(element.image, element.canvas, ctx);
-	const [x, y] = clickCoordsToCanvas(event.clientX, event.clientY, element.canvas);
+	setBaseImage(element);
+	let [x, y] = clickCoordsToCanvas(event.clientX, event.clientY, element.canvas);
 	element.watermark.x = x;
-	element.watermark.y = y
+	element.watermark.y = y;
 	drawWatermark(element.watermark, ctx);
 }
 
@@ -165,12 +167,37 @@ function getFactor(img_width, img_height, max_width, max_height) {
 	return Math.min(max_width / img_width, max_height / img_height);
 }
 
-function setBaseImage(img, c, ctx) {
+function setBaseImage(element) {
+	const img = element.image;
+	const c = element.canvas;
+	const ctx = c.getContext("2d");
 	const f = getFactor(img.width, img.height, MAX_WIDTH, MAX_HEIGHT);
-	const new_width = c.width = Math.ceil(img.width * f);
-	const new_height = c.height = Math.ceil(img.height * f)
 	ctx.imageSmoothingEnabled = (f < 1);
-	ctx.drawImage(img, 0, 0, new_width, new_height);
+
+	const pre_width = Math.ceil(img.width * f);
+	const pre_height = Math.ceil(img.height * f);
+
+	if (element.rotated % 2) [c.width, c.height] = [pre_height, pre_width];
+	else [c.width, c.height] = [pre_width, pre_height];
+	
+	const rotation_radians = radians_factor * element.rotated;
+	ctx.rotate(rotation_radians);
+
+	offset_x = (element.rotated == 2 || element.rotated == 3) ? -pre_width : 0;
+	offset_y = (element.rotated == 1 || element.rotated == 2) ? -pre_height : 0;
+	ctx.drawImage(img, offset_x, offset_y, pre_width, pre_height);
+	ctx.rotate(-rotation_radians);
+}
+
+function rotateEntry(id) {
+	const entry = fanarts.find(element => element.id == id);
+	if (!entry) return;
+	if (!entry.enabled) return;
+
+	entry.rotated++;
+	if (entry.rotated >= 4 || entry.rotated < 0) entry.rotated = 0;
+	entry.clicked = false;
+	updateFanartList();
 }
 
 function moveUpDown(id, amount) {
@@ -192,7 +219,7 @@ function toggleInvert(id, button) {
 	entry.watermark.invert = entry.watermark.invert == '' ? 'invert(1)' : '';
 	button.innerText = entry.watermark.invert ? emoji_color_black : emoji_color;
 	const ctx = entry.canvas.getContext('2d');
-	setBaseImage(entry.image, entry.canvas, ctx);
+	setBaseImage(entry);
 	drawWatermark(entry.watermark, ctx);
 }
 
@@ -233,7 +260,16 @@ function getArtworks() {
 	get_button.disabled = true;
 	get_button.innerText = "🔄"
 	postData("/", { month: month_value }).then((data) => {
-		fanarts.push(...data);
+		
+		const new_data = data.map((element) => {
+			return {
+				...element,
+				"enabled": 1,
+				"rotated": 0,
+				"watermark": { invert: "" },
+			};
+		});
+		fanarts.push(...new_data);
 		controls_div.hidden = false;
 		updateOpacity();
 		updateFanartList();

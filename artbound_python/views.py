@@ -21,6 +21,7 @@ emoji = {
     "color_black": "⚫",
     "help": "❔",
     "home": "🏠",
+    "rotate": "🔁",
 }
 
 @app.route('/', methods=['GET', 'POST'])

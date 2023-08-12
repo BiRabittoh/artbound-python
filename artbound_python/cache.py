@@ -8,9 +8,6 @@ from artbound_python.api import get_file, get_rows
 CACHE_DIRECTORY = "cache"
 CACHE_PATH = os.path.join("artbound_python", "static", "res", CACHE_DIRECTORY)
 
-db = []
-last_updated = ""
-
 with suppress(FileExistsError):
     os.makedirs(CACHE_PATH)
 
@@ -35,13 +32,10 @@ def handle_fanart(fanart):
 
 def handle_row(row):
     fanart_date = datetime.strptime(row[0], "%d/%m/%Y %H.%M.%S")
-    fanart_id = row[3][33:]
     return {
-        'id': fanart_id,
+        'id': row[3][33:],
         'date': fanart_date.strftime("%Y-%m"),
         'name': row[1],
-        'enabled': 1,
-        'watermark': { 'invert': '' }
 	}
     
 class DB():

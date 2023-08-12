@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<head>
+    <title>ArtBound Panel 2.0</title>
+    <style>
+        .container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(auto-fill, 120px);
+            grid-row-gap: .5em;
+            grid-column-gap: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container">
+    </div>
+
+    <button onclick="addTemplate()">Add element</button>
+
+    <template id="item_template">
+        <div class="item" style="background: {{color}}">
+            <p>{{ num }}</p>
+            <p>
+                <button class="del_el" onClick="deleteElement(this)">Delete</button>
+            </p>
+        </div>
+    </template>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    <script>
+        const COLORS = [
+            '#FE9',
+            '#9AF',
+            '#F9A',
+            "#AFA",
+            "#FA7"
+        ];
+
+        function addItem(container, template) {
+            let color = COLORS[_.random(COLORS.length - 1)];
+            let num = _.random(10000);
+
+            node = Mustache.render(template, { color, num });
+            container.insertAdjacentHTML('beforeend', node);
+        }
+
+        function deleteElement(element) {
+            element.parentNode.parentNode.remove();
+        }
+
+        const tmpl = document.getElementById('item_template').innerHTML;
+        const container = document.getElementById('app');
+
+        function addTemplate() {
+            addItem(container, tmpl);
+        }
+
+        for (let i = 0; i < 5; i++) {
+            addTemplate()
+        }
+    </script>
+</body>

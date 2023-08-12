@@ -91,13 +91,13 @@
                 <canvas class="card-img-top entry-img" id="{| id |}" data-name="{| name |}" data-content="{| content |}"
                     data-filename="{| filename |}"></canvas>
                 <div class="card-body">
-                    <a class="card-text" title="Clicca per copiare."
-                        onclick="navigator.clipboard.writeText(this.innerText);">{| filename |}</a>
+                    <a class="card-text" title="Clicca per copiare." onclick="navigator.clipboard.writeText(this.innerText);">{| filename |}</a>
                     <div class="d-flex justify-content-between align-items-center card-controls">
                         <div class="btn-group">
                             <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', -1);">{{ emoji["prev"] }}</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="toggleEntry('{| id |}');">{{ emoji["toggle"] }}</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="toggleInvert('{| id |}', this);">{{ emoji["color"] }}</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="rotateEntry('{| id |}');">{{ emoji["rotate"] }}</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="saveEntry('{| id |}');">{{ emoji["save"] }}</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="saveEntryIG('{| id |}');">{{ emoji["save_ig"] }}</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="moveUpDown('{| id |}', 1);">{{ emoji["next"] }}</button>
