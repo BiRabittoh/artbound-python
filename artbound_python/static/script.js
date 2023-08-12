@@ -260,16 +260,14 @@ function getArtworks() {
 	get_button.disabled = true;
 	get_button.innerText = "🔄"
 	postData("/", { month: month_value }).then((data) => {
-		
-		const new_data = data.map((element) => {
+		fanarts.push(...data.map((element) => {
 			return {
 				...element,
 				"enabled": 1,
 				"rotated": 0,
 				"watermark": { invert: "" },
 			};
-		});
-		fanarts.push(...new_data);
+		}));
 		controls_div.hidden = false;
 		updateOpacity();
 		updateFanartList();
