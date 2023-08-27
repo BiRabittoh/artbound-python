@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    image: artbound_python:latest
+    image: ghcr.io/birabittoh/artbound-python:main
     container_name: artbound-python
     ports:
       - 127.0.0.1:1111:80
@@ -11,10 +11,5 @@ services:
       - ${PWD}/.env:/app/.env
       - ${PWD}/credentials.json:/app/credentials.json
       - ${PWD}/token.json:/app/token.json
-    #healthcheck:
-    #  test: wget -nv --tries=1 --spider http://localhost || exit 1
-    #  interval: 30s
-    #  timeout: 5s
-    #  retries: 2
 volumes:
   cache:
